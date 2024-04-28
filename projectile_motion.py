@@ -22,3 +22,5 @@ initial_velocity, launch_angle = find_initial_velocity_and_angle(range_input, ma
 
 print("Initial velocity:", initial_velocity, "m/s")
 print("Launch angle:", launch_angle, "degrees")
+
+
