@@ -1,5 +1,5 @@
 import math
-
+print("PROJECTILE MOTION")
 def find_initial_velocity_and_angle(range_, max_height):
     g = 9.81  # acceleration due to gravity (m/s^2)
 
