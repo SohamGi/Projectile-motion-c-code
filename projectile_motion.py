@@ -1,5 +1,7 @@
-import math
-print("PROJECTILE MOTION")
+import math 
+
+h=9.8
+
 def find_initial_velocity_and_angle(range_, max_height):
     g = 9.81  # acceleration due to gravity (m/s^2)
 
@@ -18,9 +20,22 @@ def find_initial_velocity_and_angle(range_, max_height):
 range_input = float(input("Enter the horizontal range (meters): "))
 max_height_input = float(input("Enter the maximum height (meters): "))
 
-initial_velocity, launch_angle = find_initial_velocity_and_angle(range_input, max_height_input)
+if (max_height_input==0):
+    initial_velocity=0
+    launch_angle=0
+    
+elif (range_input==0):
+    v=math.sqrt(2*h*max_height_input)
+    launch_angle=90
+    initial_velocity=v
+    time=(2*v)/h
+    print("Initial velocity:", initial_velocity,"m/s")
+    print("Launch angle:", launch_angle, "degrees")
+    print("Time of flight:", time,"seconds")
 
-print("Initial velocity:", initial_velocity, "m/s")
-print("Launch angle:", launch_angle, "degrees")
+else:
+    initial_velocity, launch_angle = find_initial_velocity_and_angle(range_input, max_height_input)
+    print("Initial velocity:", initial_velocity, "m/s")
+    print("Launch angle:", launch_angle, "degrees")
 
 
