@@ -23,7 +23,10 @@ max_height_input = float(input("Enter the maximum height (meters): "))
 if (max_height_input==0):
     initial_velocity=0
     launch_angle=0
-    
+    print("Launch angle: 0")
+    print("Initial velocity: 0 ")
+    print("time of flight: 0")
+
 elif (range_input==0):
     v=math.sqrt(2*h*max_height_input)
     launch_angle=90
