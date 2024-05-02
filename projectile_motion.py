@@ -2,63 +2,63 @@ import math
 
 # Constants
 GRAVITY = 9.81  # acceleration due to gravity (m/s^2)
+DRAG_COEFFICIENT = 0.1  # drag coefficient in kg/m
+MASS = 1.0  # mass of the projectile in kg
 
-def find_initial_velocity_and_angle(range_, max_height):
+def find_velocity_and_angle(range_, max_height, steps=1000):
     """
-    Calculate the initial velocity and launch angle for a given range and maximum height.
+    Calculate the initial velocity and launch angle for a given range and maximum height,
+    taking air resistance into account using a numerical approach.
 
     Args:
     range_ (float): The horizontal range in meters.
     max_height (float): The maximum height in meters.
+    steps (int): Number of simulation steps for numerical integration.
 
     Returns:
     tuple: Initial velocity (m/s) and launch angle (degrees).
     """
-    # Solving for launch angle (theta) using the equation for max height
-    theta = math.atan((4 * max_height) / range_)
+    best_u = None
+    best_theta = None
+    min_error = float('inf')
+    
+    for u_trial in range(1, 100):
+        for theta_trial in range(1, 90):
+            theta_rad = math.radians(theta_trial)
+            vx = u_trial * math.cos(theta_rad)
+            vy = u_trial * math.sin(theta_rad)
+            x, y = 0, 0
+            max_y = 0
 
-    # Solving for initial velocity (u) using the launch angle
-    u = math.sqrt((range_ * GRAVITY) / math.sin(2 * theta))
+            for _ in range(steps):
+                air_resistance = DRAG_COEFFICIENT * (vx**2 + vy**2)**0.5 / MASS
+                ax = -air_resistance * vx
+                ay = -GRAVITY - air_resistance * vy
 
-    # Converting angle from radians to degrees
-    theta_deg = math.degrees(theta)
+                vx += ax * (range_ / steps / vx)
+                vy += ay * (range_ / steps / vx)
+                x += vx * (range_ / steps / vx)
+                y += vy * (range_ / steps / vx)
 
-    return u, theta_deg
+                if y > max_y:
+                    max_y = y
+                if y < 0:
+                    break
 
-def calculate_vertical_launch(max_height):
-    """
-    Calculate the initial velocity and time of flight for a vertical launch.
+            range_error = abs(range_ - x)
+            height_error = abs(max_height - max_y)
+            total_error = range_error + height_error
 
-    Args:
-    max_height (float): The maximum height in meters.
+            if total_error < min_error:
+                min_error = total_error
+                best_u = u_trial
+                best_theta = theta_trial
+    
+    return best_u, best_theta
 
-    Returns:
-    tuple: Initial velocity (m/s) and time of flight (seconds).
-    """
-    v = math.sqrt(2 * GRAVITY * max_height)
-    time = (2 * v) / GRAVITY
-    return v, time
+range_input = float(input("Enter the horizontal range (meters): "))
+max_height_input = float(input("Enter the maximum height (meters): "))
 
-def main():
-    try:
-        range_input = float(input("Enter the horizontal range (meters): "))
-        max_height_input = float(input("Enter the maximum height (meters): "))
-
-        if max_height_input < 0 or range_input < 0:
-            print("Please enter non-negative values for range and height.")
-        elif max_height_input == 0:
-            print("Initial velocity: 0 m/s\nLaunch angle: 0 degrees\nTime of flight: 0 seconds")
-        elif range_input == 0:
-            initial_velocity, time_of_flight = calculate_vertical_launch(max_height_input)
-            print(f"Initial velocity: {initial_velocity:.2f} m/s")
-            print("Launch angle: 90 degrees")
-            print(f"Time of flight: {time_of_flight:.2f} seconds")
-        else:
-            initial_velocity, launch_angle = find_initial_velocity_and_angle(range_input, max_height_input)
-            print(f"Initial velocity: {initial_velocity:.2f} m/s")
-            print(f"Launch angle: {launch_angle:.2f} degrees")
-    except ValueError:
-        print("Invalid input. Please enter a valid number.")
-
-if __name__ == "__main__":
-    main()
+initial_velocity, launch_angle = find_velocity_and_angle(range_input, max_height_input)
+print(f"Initial velocity: {initial_velocity:.2f} m/s")
+print(f"Launch angle: {launch_angle:.2f} degrees")
